@@ -1,0 +1,286 @@
+React et les tests... c'est pas facile. Ils sont rarement fait et rarement correctement
+fait.
+
+Ici on parle des tests **unitaire** qui te permettent de vérifier que tes composants,
+même les plus petits, fonctionne _correctement_.
+
+Dans ce module on va découvrir comment tester un composant avec Vitest et react-testing-library.
+
+On va découvrir..
+
+- _que faut-il tester_ dans nos compossants,
+- Comment correctement testers ses composnats,
+- Comment mock une API et des actions asyncrones,
+- Comment mock toutes librairies externes
+
+### Pourquoi Vitest et react-testing-library
+
+`Vitest` n'est pas la librairy de test _la plus populaire_, du tout. C'est `Jest` qui
+est de loins le plus apprécié.
+
+Mais `Vitest` commencent à être très apprécier, ils apportent un code plus claire et simple
+et je pense que ce sera plus facile pour toi de l'apprendre.
+
+Mais je te soulage, `Jest` est pas très différent, une fois que tu connaîtra `Vitest` tu
+pourras aisémenet passer à `Jest` dans des entreprises.
+
+`Vitest` à de nombreux avantages, notamement sa rapidité, fiabilité et simplicité d'installation.
+
+## Introduction aux tests
+
+Tu n'es peut-être pas familier avec les tests, même en `JavaScript`, mais c'est pas grave,
+on va découvrir tout ça ensemble.
+
+Dans ce module on va voir rapidement les tests en `JavaScript` afin que tu puisses
+apréhender les tests avec `React` plus facilement.
+
+### Les tests en JavaScript
+
+Les tests en `JavaScript` sont composé de 3 fonctions essentiels :
+
+- `describe` va définir une groupes de test, par exemple tous les tests liée aux composant `Toggle`
+- `it` va définir un test, par exemple : "d on click que `Toggle`, le state change"
+  - `test` est une alternative à `it`
+- `expect` va définir une assertion, par exemple : "le state change à `true`"
+
+Mais t'en fais pas, on va rapidement voir chacun des cas.
+
+### Notre premier test !
+
+On va commencer par un exemple simple, une fonction qui va définir le `displayName` d'un
+utilisateur en fonction de l'email et du name.
+
+```ts
+export const displayName = ({
+  email,
+  name,
+}: {
+  email?: string | null;
+  name?: string | null;
+}) => {
+  if (name) {
+    return name;
+  }
+  if (email) {
+    return email;
+  }
+  return 'Anonymous';
+};
+```
+
+Que fais-il tester ici ? Tu peux ajouter autant de réponse que tu veux, celle-ci sont stoqué dans
+ton navigateur.
+
+<QuizzComponent />
+
+<Spoiler title="Réponse">
+  Ici il y a 3 cas à tester :
+
+- Si le name est défini, on retourne le name
+
+- Si le name et le email sont défini, on retourne le name
+
+- Si uniquement l'email est défini, on retourne l'email
+
+- Si rien n'est défini, on retourne "Anonymous"
+  </Spoiler>
+
+### Les assertions
+
+Les assertions sont des fonctions qui permettent de vérifier que le résultat d'un test est
+correct.
+
+Par exemple, si on veut vérifier que le résultat d'une fonction est égal à `true`, on va
+utiliser `toBe` :
+
+```ts
+expect(true).toBe(true)
+```
+
+Mais il y a beaucoup d'autres assertions, tu peux les retrouver dans la documentation de
+`jest` : https://jestjs.io/docs/expect, c'est exactement les mêmes que pour `vitest`.
+
+Dans un test, il est possible d'ajouter autant d'assertion que tu veux.
+
+### Mocking des fonctions 
+
+Il est possible de mocker des fonctions, par exemple :
+
+```ts
+const mockFn = vi.fn()
+```
+
+Cette fonction va enregistrée quand elle est appelé, avec quel paramètre etc... c'est ce
+qu'on appel un "mock".
+
+Tu vas pouvoir ensuite vérifier que la fonction a été appelé avec les bons paramètres et
+le bon nombre de fois.
+
+```ts
+expect(mockFn).toHaveBeenCalledWith('test')
+expect(mockFn).toHaveBeenCalledTimes(1)
+```
+
+La pratique te sera bien plus utiles pour comprendre ce genre de chose.
+
+### Testons notre fonction
+
+J'ai préparer une playground pour toi, tu verras dans les tabs qu'il y a déjà le code 
+de `displayName.ts` et `add.test.ts`.
+
+Tu n'as plus qu'à ajouter les tests dans `add.test.ts`, il se lanceront automatiquement.
+
+<Playground template="test-ts" files={{
+  "/displayName.ts": `export const displayName = ({
+  email,
+  name,
+}: {
+  email?: string | null;
+  name?: string | null;
+}) => {
+  if (name) {
+    return name;
+  }
+  if (email) {
+    return email;
+  }
+  return 'Anonymous';
+};`,
+  "/add.test.ts": `import { displayName } from "./displayName";
+
+describe('displayName', () => {
+  // J'ai déjà fais le premier test, à toi de rajouter les autres !
+  test("return the name if name and email is defined", () => {
+    const name = displayName({name: "Test", email: "email"})
+    expect(name).toBe("Test")
+  });
+});
+`
+}} />
+
+
+<Spoiler title="Solution">
+<Playground template="test-ts" files={{
+  "/displayName.ts": `export const displayName = ({
+  email,
+  name,
+}: {
+  email?: string | null;
+  name?: string | null;
+}) => {
+  if (name) {
+    return name;
+  }
+  if (email) {
+    return email;
+  }
+  return 'Anonymous';
+};`,
+  "/adds.test.ts": `import { displayName } from "./displayName";
+
+describe('displayName', () => {
+  test("return the name if name and email is defined", () => {
+    const name = displayName({name: "Test", email: "email"})
+    expect(name).toBe("Test")
+  });
+
+  test("return name if only name is defined", () => {
+    const name = displayName({name: "Test"})
+    expect(name).toBe("Test")
+  });
+
+  test("return email if only email is not defined", () => {
+    const name = displayName({ email: "email" })
+    expect(name).toBe("email")
+  });
+
+  test("return anonymous if nothing is defined", () => {
+    const name = displayName({ })
+    expect(name).toBe("Anonymous")
+  });
+});
+`
+}} />
+</Spoiler>
+
+## Encore une autre
+
+Une fonction qui va inverser un tableau de string tout en inversant les strings qui
+sont à l'intérieur : 
+
+```ts
+export const reverse = (arr: string[]) => {
+  return arr.map((str) => {
+    return str.split('').reverse().join('');
+  }).reverse();
+};
+```
+
+Quels tests faudra-il faire ?
+
+<QuizzComponent />
+
+<Spoiler title="Réponse">
+  Ici il y a 3 cas à tester :
+  * Si le tableau est vide, on retourne un tableau vide
+  * Si le tableau contient un élément, on retourne un tableau avec l'élément inversé
+  * Si le tableau contient plusieurs éléments, on retourne un tableau avec les éléments inversés et un tableau inversé
+</Spoiler>
+
+A toi de jouer : 
+
+<Playground template="test-ts" files={{
+  "/reverse.ts": `export const reverse = (arr: string[]) => {
+  return arr.map((str) => {
+    return str.split('').reverse().join('');
+  }).reverse();
+};`,
+  "/reverse.test.ts": `import { reverse } from "./reverse";
+
+describe('reverse', () => {
+  // J'ai déjà fais le premier test, à toi de rajouter les autres !
+  test("return empty array if array is empty", () => {
+    const reversed = reverse([])
+    expect(reversed).toEqual([])
+  });
+});
+`
+}} />
+
+<Spoiler title="Solution">
+<Playground template="test-ts" files={{
+  "/reverse.ts": `export const reverse = (arr: string[]) => {
+  return arr.map((str) => {
+    return str.split('').reverse().join('');
+  }).reverse();
+};`,
+  "/reverse.test.ts": `import { reverse } from "./reverse";
+
+describe('reverse', () => {
+  test("return empty array if array is empty", () => {
+    const reversed = reverse([])
+    expect(reversed).toEqual([])
+  });
+
+  test("return array with reversed string if array contains one element", () => {
+    const reversed = reverse(["test"])
+    expect(reversed).toEqual(["tset"])
+  });
+
+  test("return array with reversed string if array contains multiple elements", () => {
+    const reversed = reverse(["test", "test2"])
+    expect(reversed).toEqual(["2tset", "tset"])
+  });
+});
+`
+}} />
+
+On utilise `toEqual` pour vérifier si celui ci est égal à un autre, dans sont contenue.
+
+Attention, il existe aussi `toBe` qui vérifie si c'est le même objet, ici ce n'est pas les mêmes
+objet car les deux tableaux ont des références différentes.
+
+- [Article sur useRef](https://codelynx.dev/posts/comment-utiliser-useref)
+
+</Spoiler>
+
