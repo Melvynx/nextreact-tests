@@ -51,6 +51,14 @@ describe('Counter', () => {
     expect(span?.textContent).toBe('1');
   });
 
+  test('defaultValue props set the component defaultValue', async () => {
+    const defaultValue = 10;
+    const div = await render(<Counter defaultValue={defaultValue} />);
+
+    const span = div.querySelector('span');
+    expect(span?.textContent).toBe(defaultValue.toString());
+  });
+
   test('onChange is called when the counter is incremented', async () => {
     const onChange = vi.fn();
     const div = await render(<Counter onChange={onChange} />);

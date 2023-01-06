@@ -15,9 +15,9 @@ describe('Counter', () => {
     // ℹ️ C'est car React est asynchrone
     // ℹ️ Entre chaque action (click, focus, etc...) il faut atteindre 1 ms pour que React puisse mettre à jour le DOM
     // 🦁 Récupère le bouton "minus"
-    // 🦁 Utilise `expect` pour vérifier que le contenue du span est "0"
-    // 🦁 Clique sur le bouton "plus"
+    // 🦁 Utilise `expect` pour vérifier que le contenue du span est "Current count: 0"
+    // 🦁 Clique sur le bouton "minus"
     // 🦁 Attendre 1ms
-    // 🦁 Vérifie que le contenue du span est "1"
+    // 🦁 Vérifie que le contenue du span est "Current count: -1"
   });
 });
