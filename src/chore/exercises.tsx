@@ -3,11 +3,11 @@
  * This is the exercise objets that will be used to create the exercises.
  */
 
-import { Toggle } from '../components/1/Counter';
+import { Counter } from '../components/counter/Counter';
 
 export const EXERCISES = [
   {
     name: '1-toggle',
-    components: <Toggle />,
+    components: <Counter />,
   },
 ];

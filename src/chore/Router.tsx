@@ -17,7 +17,9 @@ export const AppRouter = () => {
           <Route
             key={exercise.name}
             path={`/${exercise.name}`}
-            element={<div>{exercise.components}</div>}
+            element={
+              <div className="demo-component-wrapper">{exercise.components}</div>
+            }
           />
 
           <Route

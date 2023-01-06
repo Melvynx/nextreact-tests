@@ -216,3 +216,9 @@ hr {
 .square.winning-square {
   background-color: var(--primary);
 }
+
+.demo-component-wrapper {
+  margin: auto;
+  width: fit-content;
+  margin-top: 32px;
+}
