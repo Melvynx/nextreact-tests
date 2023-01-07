@@ -9,6 +9,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: [path.resolve(__dirname, 'src/test/vitest.setup.ts')],
+    env: {
+      IS_REACT_ACT_ENVIRONMENT: 'true',
+    },
   },
   // resolve: {
   //   alias: {

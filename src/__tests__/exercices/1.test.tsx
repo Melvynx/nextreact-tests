@@ -1,12 +1,12 @@
 // 🦁 Ajoute `expect` à l'import de `vitest`
 import { describe, test } from 'vitest';
-// 🦁 Décomente les imports suivants
+// 🦁 Dé-commente les imports suivants
 // import ReactDOM from 'react-dom/client';
 // import { Counter } from '../../components/1/Counter';
 // import { wait } from '../../test/wait';
 
 describe('Counter', () => {
-  test('test', async () => {
+  test('the counter is decremented when the minus button is clicked', async () => {
     // 🦁 Créer un élément `div` avec `document.createElement`
     // 🦁 Ajouter l'élément `div` au `body` avec `document.body.append`
     // 🦁 Créer un `root` avec `ReactDOM.createRoot`

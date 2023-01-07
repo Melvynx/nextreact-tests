@@ -222,3 +222,17 @@ hr {
   width: fit-content;
   margin-top: 32px;
 }
+
+/* create an animate-spin tailwind like class */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
