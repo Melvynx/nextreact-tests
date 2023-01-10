@@ -1,19 +1,28 @@
 import matchers from '@testing-library/jest-dom/matchers';
 import { cleanup } from '@testing-library/react';
-import { beforeEach, expect, vi } from 'vitest';
-import createFetchMock from 'vitest-fetch-mock';
+import { fetch } from 'cross-fetch';
+import { beforeEach, expect } from 'vitest';
+import { server } from './server';
 
 expect.extend(matchers);
 
-export const fetchMock = createFetchMock(vi);
-
-// adds the 'fetchMock' global variable and rewires 'fetch' global to call 'fetchMock' instead of the real implementation
-fetchMock.enableMocks();
+global.fetch = fetch;
 
 beforeEach(() => {
   // clean the dom with @react-testing-library
   // https://testing-library.com/docs/react-testing-library/api#cleanup
   cleanup();
+});
 
-  fetchMock.doMock();
+afterEach(() => {
+  server.resetHandlers();
+});
+
+// Start server before all tests
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'error' });
+});
+
+afterAll(() => {
+  server.close();
 });

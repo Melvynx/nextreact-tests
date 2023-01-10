@@ -23,7 +23,7 @@ const useAuth = () => {
   const login = (form: LoginForm) => {
     setIsLoading(true);
 
-    return fetch('/api/login', {
+    return fetch('https://api.server.com/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -5,7 +5,11 @@
 
 import { Auth } from '../components/auth/Auth';
 import { Counter } from '../components/counter/Counter';
+import { Dashboard } from '../components/dashboard/Dashboard';
+import Geolocation from '../components/geolocation/Geolocation';
 import { Login } from '../components/login/Login';
+import { ThemeContextProvider } from '../components/theme/ThemeProvider';
+import { UserContextProvider } from '../components/user/UserProvider';
 
 export const EXERCISES = [
   {
@@ -19,5 +23,19 @@ export const EXERCISES = [
   {
     name: 'Auth',
     components: <Auth />,
+  },
+  {
+    name: 'GeoLocation',
+    components: <Geolocation />,
+  },
+  {
+    name: 'Dashboard',
+    components: (
+      <UserContextProvider>
+        <ThemeContextProvider>
+          <Dashboard />
+        </ThemeContextProvider>
+      </UserContextProvider>
+    ),
   },
 ];

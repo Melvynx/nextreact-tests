@@ -1,7 +1,113 @@
-Les tests avec React c'est comme les tests JavaScript, juste qu'ici il va nous falloir
-un utilitaire pour vérifier dans le HTML généré par React. On va donc utiliser
-[testing-library](https://testing-library.com/docs/react-testing-library/intro) qui
-va nous permettre de tester le composant comme un utilisateur le verrait.
+Avec React il va falloir tester des composants. Nos composants c'est un peu comme des fonctions,
+ils vont prendre en paramètre des props et retourner un élément React. La grande différent c'est 
+qu'il va falloir intéragir avec notre élément React afin de vérifier que ce qui se passe à l'intériuer
+est bien ce qu'on attend.
 
-Mais avant d'utiliser testing-library, on va essayer de faire sans, pour bien comprendre
-l'utilité d'une tels librairie.
+Car contrairement au fonction, les composants React "vivent", ils ne sont pas juste appelé une fois
+et c'est terminé, il y a pleins d'élément qui rentre en compte.
+
+## Tester le DOM
+
+Ce qu'on va vouloir faire avec React c'est tester ce qui se passe dans le DOM. Cliquer sur 
+un bouton, vérifier que l'interface à changer etc...
+
+Deuxièmement on va vouloir tester les props, vérifier que nos callback sont appelé, que nos
+valeurs sont prise en compte etc...
+
+On va presque toujours retrouver ses deux pattern.
+
+Pour faire ça, on a même pas besoin de librairie externe, on peut tout simplement utilisé
+le `jest-dom` qui est un DOM virtuel qu'on va pouvoir manipuler dans nos tests.
+
+Il n'a aucun interface, c'est un DOM invisible sauf dans notre console.
+
+C'est parties pour faire l'exercice 1 de mon workshop :
+
+<video id="ex1" />
+
+<Spoiler title="Solutions partie 1">
+  <video id="ex1_p1" />
+</Spoiler>
+
+<Spoiler title="Solutions partie 2">
+  <video id="ex1_p2" />
+</Spoiler>
+
+<Spoiler title="Solutions partie 3">
+  <video id="ex1_p3" />
+</Spoiler>
+
+<Spoiler title="Solutions partie 4">
+On va définir une variable `defaultValue` qui va contenir la valeur par défaut de notre compteur.
+
+On utilise une variable afin de pouvoir la réutilié dans les assertions, sans utiliser de "random value"
+ou "magic number" comme on les appels.
+
+On utilise la fonction render créer précédement pour ajouter la defaultValue avec notre variable,
+puis on récupère le `span` et vérifie que son contenu est bien égale à la valeur de notre variable.
+
+```ts
+test('defaultValue props set the component defaultValue', async () => {
+  const defaultValue = 10;
+  const div = await render(<Counter defaultValue={defaultValue} />);
+
+  const span = div.querySelector('span');
+  expect(span?.textContent).toBe(defaultValue.toString());
+});
+```
+</Spoiler>
+
+<Spoiler title="Solutions partie 5">
+  <video id="ex1_p5" />
+</Spoiler>
+
+## Librairie à la rescousse
+
+Maintenant que l'on a vu comment tester le DOM, sans aucune librairie, on va voir
+comment tester le DOM en ajoutant la libraire `react-testing-library`.
+
+Celle-ci va gérer tout ce qu'on à fait dans la fonction `render` précédent et va nous
+permettre de faire des tests plus facilement.
+
+En plus de `render` elle va nous offrir des fonctions afin d'intéragir avec le DOM.
+Ces fonctions sont définit et choisis spécifiquement pour te forcer à intéragir avec le 
+DOM comme un humain le ferrait.
+
+On retrouvera : 
+
+* `getByText` : permet de récupérer un élément du DOM en fonction de son contenu textuel
+* `getByLabelText` : permet de récupérer un élément du DOM en fonction de son label
+* `getByRole`: permet de récupérer un élément du DOM en fonction de son role (on le verras dans les vidéos solutions)
+
+Il y a 3 types de getter différent :
+
+* `getBy` : va lancer une erreur si il ne trouve pas l'élément
+* `queryBy` : va retourner `null` si il ne trouve pas l'élément, pratique pour vérifier qu'un élément **n'est pas** présent dans le DOM
+* `findBy` : va retourner une promise qui attend que l'élément soit présent dans le DOM. Si c'est pas le cas après un certain temps, il va reject la promise.
+
+Il y a aussi la variant de chaque sélécteur ci-dessus avec `getAllBy`, `queryAllBy` et `findAllBy` qui va retourner un tableau
+d'élément au lieu d'un seul.
+
+### Exercice 2
+
+<video id="ex_2">
+
+<Spoiler title="Solutions partie 1">
+  <video id="ex2_p1" />
+</Spoiler>
+
+<Spoiler title="Solutions partie 2">
+  <video id="ex2_p2" />
+</Spoiler>
+
+<Spoiler title="Solutions partie 3">
+  <video id="ex2_p3" />
+</Spoiler>
+
+<Spoiler title="Solutions partie 4">
+  <video id="ex2_p4" />
+</Spoiler>
+
+<Spoiler title="Solutions partie 5">
+  <video id="ex2_p5" />
+</Spoiler>

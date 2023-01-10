@@ -1,0 +1,190 @@
+En anglais `mock` veut dire `moquer`, `se moquer de` ou `faux` !
+
+Le fait de faire des `mock` dans les tests c'est un peu comme si on se moquais 
+des fonctions qu'on ne peut pas controller, en leur passant des valeurs biddons.
+
+Il y a plusieurs grandes familles de `mock` quand on test une application React.
+
+### Les `mock` de fonctions
+
+On va pouvoir `mock` des fonctions afin de connaître : 
+* quand elle est appelée
+* avec quels arguments elle est appelée
+* combien de fois elle est appelée
+
+Pour ça, avec vite on utilise `vi.fn()` qui va nous retourner une fonction `mock`.
+
+Voici un test qui utilise une fonction `mock` : 
+
+<Playground template="test-ts" files={{
+  "/reverse.ts": `export const powCallback = (n: number, callback: (sum: number) => void) => {
+  callback(n * n)
+};`,
+  "/add.test.ts": `import { reverse } from "./reverse";
+
+describe('powCallback', () => {
+  test('should call callback with pow of n', () => {
+    const callback = vi.fn();
+    powCallback(2, callback);
+    expect(callback).toBeCalledWith(4);
+    expect(callback).toBeCalledTimes(1);
+  });
+});
+`
+}} />
+
+On vérifie ici avec quel argument à été appelée la fonction `callback` et combien
+de fois elle a été appelée. `callback` prend le type `any` est peut donc être
+appelée avec n'importe quel type d'argument.
+
+### Les `mock` de fonctions global
+
+En web il y a beaucoup de fonction "global" : 
+
+* `fetch`
+* `localStorage`
+* `navigator`
+etc...
+
+Lors de nos tests, on a pas accès à toutes ses données. On peut donc les `mock`
+pour les remplacer par des données "bidons".
+
+Si on ne le fait pas, et que nos composants appel `window.localStorage` par exemple,
+on aura une erreur car `window.localStorage` n'existe pas dans le contexte de
+notre test.
+
+Pour résoudre ce problème avec vite on pourrait faire ceci :
+
+<Playground template="test-ts" files={{
+  "/local-storage.ts": `export const getLocalStorage = (key: string) => {
+  return window.localStorage.getItem(key);
+};`,
+  "/add.test.ts": `import { getLocalStorage } from "./local-storage";
+
+describe('getLocalStorage', () => {
+  test('should return localStorage value', () => {
+    const localStorageMock = {
+      getItem: jest.fn(() => 'value')
+    };
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorageMock
+    });
+    expect(getLocalStorage('key')).toBe('value');
+  });
+});
+`
+}} />
+
+Avec jest le code est pas très sexy, mais avec `vitest` ça ressemblerais à ça : 
+
+```ts
+const localStorageMock = {
+  getItem: vi.fn(() => 'value')
+}; 
+
+// Il va automatiquement remplacer window.localStorage par notre mock
+vi.stubGlobal('localStorage', localStorageMock);
+```
+
+### Les `mock` de fetch
+
+Pour fetch il va falloir non seulement mock la valeur global de `fetch` mais aussi
+mock les API call. Créer une sorte de faux server qui va répondre à nos requêtes.
+
+Pour ça on va utiliser la librairie `cross-fetch` qui nous permet de faire des
+`fetch` dans node.
+
+```ts
+import { fetch } from 'cross-fetch';
+
+global.fetch = fetch;
+```
+
+Puis on va utiliser `msw` qui va créer une sorte de faux serveur à l'intérieur de nos
+tests qui va répondre à nos requêtes.
+
+```ts
+import { setupServer } from 'msw/node';
+import { rest } from 'msw';
+
+const handlers = [
+  rest.get('https://api.github.com/users/octocat', (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
+        name: 'octocat',
+        bio: 'A cat',
+      }),
+    );
+  }),
+];
+
+const server = setupServer(...handlers);
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+```
+
+En faisant ça dans le fichier de setup des tests, on va pouvoir créer une vrai, fausse,
+api pour notre application de test.
+
+On pourrait ici définir des milliers d'endpoint qui ferrait fonctionner notre application.
+Ici c'est des endpoints globals, qui vont être utilisé pour tous nos tests. Mais il est aussi
+possible de créer des endpoints local pour un seul test : 
+
+```ts
+describe("Test", () => {
+  beforeEach(() => {
+    server.use(
+      rest.get('https://api.github.com/users/octocat', (req, res, ctx) => {
+        return res(
+          ctx.status(400),
+          ctx.json({
+            message: "Oops, something went wrong"
+          }),
+        );
+      }),
+    );
+  });
+
+  test("should return error", async () => {
+    const json = await fetch("https://api.github.com/users/octocat").then(r => r.json())
+    expect(json.message).toBe("Oops, something went wrong")
+  })
+})
+```
+
+Dans ce test on override le comportement par défaut de notre server msw uniquement pour le 
+test, pour tous les autres tests de notre applications on va retourner au comportement
+définit précédemment.
+
+### Les `mock` de tout le reste
+
+On peut aussi mock [les dates](https://vitest.dev/guide/mocking.html#dates), [les librairies](https://vitest.dev/guide/mocking.html#modules)
+et même [les timers](https://vitest.dev/guide/mocking.html#timers).
+
+Le plus intéressant c'est le fait de pouvoir mock des librairies qui ne fonctionnerais pas
+dans un environement de test.
+
+Par exemple pour créer la plateforme sur laquel tu lis ses lignes, j'ai du mock les différentes
+fonction de NextJS qui n'était pas supporté dans l'environement de test : 
+
+```ts 
+const useSearchParamsMock = () => ({
+  get: vi.fn((key) => key || null),
+});
+
+vi.mock('next/navigation', () => {
+  return {
+    useSearchParams: useSearchParamsMock,
+  };
+});
+```
+
+## Conclusion
+
+Tu peux tout mocké, parfois c'est compliqué, parfois il faut lire des vieux stackoverflow,
+mais c'est possible.
+
+Le but est de tester tes composants en pouvant controller tous les éléments extérieurs.
