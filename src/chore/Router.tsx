@@ -35,7 +35,7 @@ export const AppRouter = () => {
 const Home = () => {
   return (
     <div className="navigation-page">
-      <h1 className="work-sans">BeginReact - Les hooks</h1>
+      <h1 className="work-sans">NextReact - Les tests</h1>
       <div className="nav-list">
         {EXERCISES.map((exercise, i) => (
           <Link key={i} to={`/${exercise.name}`}>
