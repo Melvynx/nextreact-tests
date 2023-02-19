@@ -2,3 +2,5 @@
 zod
 *.mjs
 *.json
+vite.config.ts
+vitest.config.js

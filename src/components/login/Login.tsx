@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { z } from 'zod';
+import { Loader } from '../Loader';
 import styles from './Login.module.css';
 
 type LoginProps = {
@@ -19,6 +20,7 @@ const LoginScheme = z.object({
 
 export const Login = ({ onSubmit }: LoginProps) => {
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -31,22 +33,31 @@ export const Login = ({ onSubmit }: LoginProps) => {
     const login = LoginScheme.safeParse({ username, password });
 
     if (login.success) {
+      setIsLoading(true);
       onSubmit({
         username: login.data.username,
         password: login.data.password,
-      }).catch((error) => {
-        if (typeof error?.message === 'string') {
-          setError(error?.message);
-          return;
-        }
+      })
+        .catch((error) => {
+          if (typeof error?.message === 'string') {
+            setError(error?.message);
+            return;
+          }
 
-        setError('Oops, something went wrong!');
-      });
+          setError('Oops, something went wrong!');
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     } else {
       const firstIssue = login.error.issues[0];
       setError(`${firstIssue.path[0]} ${firstIssue.message}`);
     }
   };
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <form className={styles.wrapper} onSubmit={handleSubmit}>

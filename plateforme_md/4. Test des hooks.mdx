@@ -1,0 +1,62 @@
+Les hooks sont aussi important à tester que nos composants, si tu utilises React correctement
+tu devrais avoir de nombreux custom hooks qui gère tout une parties importante de ton application.
+
+Pour tester les hooks, il y a plusieurs moyens. Mais comment beaucoup de chose dans React le moyen
+le plus simple est d'ajouter un composants custom qui va offrir des fonctions qui permettent de 
+directement intéagir avec notre custom hooks.
+
+```ts
+const useToggle = () => {
+  const [value, setValue] = useState(false);
+
+  const toggle = () => setValue(curr => !curr);
+
+  return { toggle, value }
+}
+```
+
+Mais comment diable est il possible de tester un hooks ?
+
+Intuitivement on pourrait se dire qu'on peut juste l'appeler dans nos tests :
+
+```ts
+test("useToggle toggle state when call toggle", () => {
+  const { toggle, value } = useToggle();
+})
+```
+
+>! Error: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons: !<
+
+Il est **pas** possible d'appeler un hooks directement dans un test. Alors que faire ?
+
+La première solution c'est de créer un composant, qui va venir wrapper notre hooks et 
+exposer des méthodes qui te permettent d'intéragir avec ton hooks.
+
+```tsx
+const TestComponent = () => {
+  const { toggle, value } = useToggle();
+
+  return (
+    <div>
+      <span>{String(value)}</span>
+      <button onClick={toggle}>Toggle</button>
+    </div>
+  );
+};
+
+test('useToggle toggle state when call toggle', () => {
+  setup(<TestComponent />);
+
+  const button = screen.getByRole('button');
+  const span = screen.getByText('false');
+
+  // etc...
+});
+```
+
+Boom ! On test le hooks en testant le composant, et ça fonctionne très bien.
+
+Je te propose d'exercer ça dans l'exercice numéro 7.
+
+<video id="intro-ex-7" />
+

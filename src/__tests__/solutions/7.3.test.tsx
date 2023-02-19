@@ -2,13 +2,13 @@ import { act, render } from '@testing-library/react';
 import { describe } from 'vitest';
 import { useCounter, UseCounterOutput } from '../../hooks/useCounter';
 
-const setup = () => {
+const setup = (initialValue?: number) => {
   const counter = {} as {
     current: UseCounterOutput;
   };
 
   const TestComponent = () => {
-    counter.current = useCounter();
+    counter.current = useCounter(initialValue);
 
     return null;
   };
@@ -35,5 +35,11 @@ describe('useCounter', () => {
 
     act(() => counter.current.reset());
     expect(counter.current.count).toBe(0);
+  });
+
+  test('if initial value is provided, the counter start with this value', async () => {
+    const counter = setup(10);
+
+    expect(counter.current.count).toBe(10);
   });
 });
