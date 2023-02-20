@@ -1,20 +1,21 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, test } from 'vitest';
 import { Counter } from '../../components/counter/Counter';
-import { wait } from '../../test/wait';
 
 describe('Counter', () => {
   test('the counter is decremented when the minus button is clicked', async () => {
-    render(<Counter />);
+    render(<Counter defaultValue={0} />);
+    const user = userEvent.setup();
+
+    const counterDisplay = screen.queryByText('0');
 
     const plusButton = screen.getByRole('button', { name: '+' });
-    const displayText = screen.getByText('0');
+    await user.click(plusButton);
+    expect(counterDisplay).toHaveTextContent('1');
 
-    expect(displayText).toBeInTheDocument();
-
-    plusButton.click();
-    await wait(1);
-
-    expect(displayText).toHaveTextContent('1');
+    const minusButton = screen.getByRole('button', { name: '-' });
+    await user.click(minusButton);
+    expect(counterDisplay).toHaveTextContent('0');
   });
 });

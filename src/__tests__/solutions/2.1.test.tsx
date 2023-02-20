@@ -1,20 +1,31 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import { describe, expect, test } from 'vitest';
 import { Counter } from '../../components/counter/Counter';
-import { wait } from '../../test/wait';
+
+const click = async (element: HTMLElement) => {
+  const event = new MouseEvent('click', {
+    bubbles: true,
+    cancelable: true,
+  });
+
+  await act(() => {
+    element.dispatchEvent(event);
+  });
+};
 
 describe('Counter', () => {
   test('the counter is decremented when the minus button is clicked', async () => {
-    const { container } = render(<Counter />);
+    render(<Counter defaultValue={0} />);
 
-    const [plusButton] = container.querySelectorAll('button');
-    const span = container.querySelector('span');
+    const counterDisplay = screen.queryByText('0');
 
-    expect(span?.textContent).toBe('0');
+    const plusButton = screen.getByRole('button', { name: '+' });
+    await click(plusButton);
+    expect(counterDisplay).toHaveTextContent('1');
 
-    plusButton.click();
-    await wait(1);
-
-    expect(span?.textContent).toBe('1');
+    const minusButton = screen.getByRole('button', { name: '-' });
+    await click(minusButton);
+    expect(counterDisplay).toHaveTextContent('0');
   });
 });

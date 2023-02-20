@@ -1,24 +1,31 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import ReactDOM from 'react-dom/client';
+import { act } from 'react-dom/test-utils';
 import { describe, expect, test } from 'vitest';
 import { Counter } from '../../components/counter/Counter';
-import { wait } from '../../test/wait';
 
-async function render(Component: ReactNode) {
+const render = async (component: ReactNode) => {
   const div = document.createElement('div');
   document.body.append(div);
 
-  const root = ReactDOM.createRoot(div);
-  root.render(Component);
-  await wait(1);
+  await act(() => {
+    const root = ReactDOM.createRoot(div);
+    root.render(component);
+  });
 
   return div;
-}
+};
 
-async function click(element: HTMLElement) {
-  element.click();
-  await wait(1);
-}
+const click = async (element: HTMLElement) => {
+  const event = new MouseEvent('click', {
+    bubbles: true,
+    cancelable: true,
+  });
+
+  await act(() => {
+    element.dispatchEvent(event);
+  });
+};
 
 describe('Counter', () => {
   test('the counter is decremented when the minus button is clicked', async () => {
@@ -26,25 +33,25 @@ describe('Counter', () => {
 
     const buttons = div.querySelectorAll('button');
 
+    const [, minus] = buttons;
+
     const span = div.querySelector('span');
     expect(span?.textContent).toBe('0');
-
-    const [, minus] = buttons;
 
     await click(minus);
 
     expect(span?.textContent).toBe('-1');
   });
 
-  test('the counter is incremented when the plus button is clicked', async () => {
+  test('the counter is incremented when the minus button is clicked', async () => {
     const div = await render(<Counter />);
 
     const buttons = div.querySelectorAll('button');
 
+    const [plus] = buttons;
+
     const span = div.querySelector('span');
     expect(span?.textContent).toBe('0');
-
-    const [plus] = buttons;
 
     await click(plus);
 

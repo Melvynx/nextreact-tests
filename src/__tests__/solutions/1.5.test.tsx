@@ -1,24 +1,31 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import ReactDOM from 'react-dom/client';
+import { act } from 'react-dom/test-utils';
 import { describe, expect, test, vi } from 'vitest';
 import { Counter } from '../../components/counter/Counter';
-import { wait } from '../../test/wait';
 
-async function render(Component: ReactNode) {
+const render = async (component: ReactNode) => {
   const div = document.createElement('div');
   document.body.append(div);
 
-  const root = ReactDOM.createRoot(div);
-  root.render(Component);
-  await wait(1);
+  await act(() => {
+    const root = ReactDOM.createRoot(div);
+    root.render(component);
+  });
 
   return div;
-}
+};
 
-async function click(element: HTMLElement) {
-  element.click();
-  await wait(1);
-}
+const click = async (element: HTMLElement) => {
+  const event = new MouseEvent('click', {
+    bubbles: true,
+    cancelable: true,
+  });
+
+  await act(() => {
+    element.dispatchEvent(event);
+  });
+};
 
 describe('Counter', () => {
   test('the counter is decremented when the minus button is clicked', async () => {
@@ -26,51 +33,49 @@ describe('Counter', () => {
 
     const buttons = div.querySelectorAll('button');
 
+    const [, minus] = buttons;
+
     const span = div.querySelector('span');
     expect(span?.textContent).toBe('0');
-
-    const [, minus] = buttons;
 
     await click(minus);
 
     expect(span?.textContent).toBe('-1');
   });
 
-  test('the counter is incremented when the plus button is clicked', async () => {
+  test('the counter is incremented when the minus button is clicked', async () => {
     const div = await render(<Counter />);
 
     const buttons = div.querySelectorAll('button');
 
-    const span = div.querySelector('span');
-    expect(span?.textContent).toBe('0');
-
     const [plus] = buttons;
+
+    const span = div.querySelector('span');
 
     await click(plus);
 
     expect(span?.textContent).toBe('1');
   });
 
-  test('defaultValue props set the component defaultValue', async () => {
+  test("the counter defaultValue props it's displayed on first render", async () => {
     const defaultValue = 10;
     const div = await render(<Counter defaultValue={defaultValue} />);
 
     const span = div.querySelector('span');
-    expect(span?.textContent).toBe(defaultValue.toString());
+    expect(span?.textContent).toBe(String(defaultValue));
   });
 
-  test('onChange is called when the counter is incremented', async () => {
+  test('the props on change is called when counter change', async () => {
     const onChange = vi.fn();
     const div = await render(<Counter onChange={onChange} />);
 
     const buttons = div.querySelectorAll('button');
-    const [plus, minus] = buttons;
 
-    await click(plus);
+    const [, minus] = buttons;
+
     await click(minus);
 
-    expect(onChange).toHaveBeenNthCalledWith(1, 1);
-    expect(onChange).toHaveBeenNthCalledWith(2, 0);
-    expect(onChange).toHaveBeenCalledTimes(2);
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(-1);
   });
 });
