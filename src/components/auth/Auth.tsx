@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { z } from 'zod';
-import { Loader } from '../Loader';
 import { Login } from '../login/Login';
 
-type LoginForm = {
+export type LoginForm = {
   username: string;
   password: string;
 };
@@ -16,12 +15,13 @@ const UserScheme = z.object({
 
 type User = z.infer<typeof UserScheme>;
 
-const useAuth = () => {
+const useLoginSubmission = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const login = (form: LoginForm) => {
-    setIsLoading(true);
+  const onSubmit = async (form: LoginForm) => {
+    setIsSubmitting(true);
 
     return fetch('https://api.server.com/auth/login', {
       method: 'POST',
@@ -41,20 +41,24 @@ const useAuth = () => {
         const parsedUser = UserScheme.parse(user);
         setUser(parsedUser);
       })
+      .catch((err) => {
+        setError(err.message || 'An error occurred');
+      })
       .finally(() => {
-        setIsLoading(false);
+        setIsSubmitting(false);
       });
   };
 
   return {
     user,
-    login,
-    isLoading,
+    onSubmit,
+    isSubmitting,
+    error,
   };
 };
 
 export const Auth = () => {
-  const { user, login, isLoading } = useAuth();
+  const { user, onSubmit, isSubmitting, error } = useLoginSubmission();
 
   if (user) {
     return <div>Logged in as {user.username}</div>;
@@ -62,8 +66,8 @@ export const Auth = () => {
 
   return (
     <div>
-      <Login onSubmit={login} />
-      {isLoading && <Loader />}
+      <Login onSubmit={onSubmit} isSubmitting={isSubmitting} />
+      {error && <p>{error}</p>}
     </div>
   );
 };

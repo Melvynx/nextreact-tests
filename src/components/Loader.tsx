@@ -2,14 +2,15 @@ import type { SVGProps } from 'react';
 
 type LoaderProps = SVGProps<SVGSVGElement> & {
   size?: number;
+  testId?: string;
 };
 
-export const Loader = ({ size = 24, ...props }: LoaderProps) => (
+export const Loader = ({ size = 24, testId = 'loader', ...props }: LoaderProps) => (
   // By Sam Herbert (@sherb), for everyone. More @ http://goo.gl/7AJzbL
   <svg
     width="38"
     height="38"
-    data-testid="loader"
+    data-testid={testId}
     viewBox="0 0 38 38"
     xmlns="http://www.w3.org/2000/svg"
     stroke="currentColor"

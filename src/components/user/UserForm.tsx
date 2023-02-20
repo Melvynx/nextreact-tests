@@ -1,15 +1,17 @@
 import { FormEvent } from 'react';
-import { useUser } from './UserProvider';
 
-export const UserForm = () => {
-  const { login: updateUser } = useUser();
+type UserFormProps = {
+  login: (user: string) => void;
+};
 
+export const UserForm = ({ login }: UserFormProps) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const newUser = formData.get('user');
+
     if (typeof newUser === 'string') {
-      updateUser(newUser);
+      login(newUser);
     }
   };
 

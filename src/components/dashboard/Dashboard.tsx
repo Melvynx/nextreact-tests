@@ -3,12 +3,7 @@ import { ToggleThemeButton } from '../theme/ToggleThemeButton';
 import { UserForm } from '../user/UserForm';
 import { useUser } from '../user/UserProvider';
 
-type DashboardProps = {
-  unreadMessage?: number;
-};
-
-export const Dashboard = ({ unreadMessage = 100 }: DashboardProps) => {
-  const { user, logout } = useUser();
+export const Dashboard = () => {
   const { theme } = useTheme();
 
   return (
@@ -21,19 +16,24 @@ export const Dashboard = ({ unreadMessage = 100 }: DashboardProps) => {
       }}
     >
       <h1>Dashboard</h1>
-      {user ? (
-        <div>
-          <p>Welcome, {user}</p>
-          <button onClick={() => logout()}>Logout</button>
-        </div>
-      ) : (
-        <div>
-          <p>Please login</p>
-          <UserForm />
-        </div>
-      )}
-      <p>You have {unreadMessage} unread message</p>
+      <DashboardUser />
       <ToggleThemeButton />
+    </div>
+  );
+};
+
+export const DashboardUser = () => {
+  const { user, logout, login } = useUser();
+
+  return user ? (
+    <div>
+      <p>Welcome, {user}</p>
+      <button onClick={() => logout()}>Logout</button>
+    </div>
+  ) : (
+    <div>
+      <p>Please login</p>
+      <UserForm login={login} />
     </div>
   );
 };
