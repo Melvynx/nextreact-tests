@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const Geolocation: React.FC = () => {
+export const Geolocation = () => {
   const [position, setPosition] = useState<{
     latitude: number;
     longitude: number;
@@ -8,12 +8,13 @@ const Geolocation: React.FC = () => {
 
   useEffect(() => {
     let mount = true;
+
     window.navigator.geolocation.getCurrentPosition(
-      (position) => {
+      (p) => {
         if (!mount) return;
         setPosition({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
+          latitude: p.coords.latitude,
+          longitude: p.coords.longitude,
         });
       },
       () => {
@@ -38,5 +39,3 @@ const Geolocation: React.FC = () => {
     </>
   );
 };
-
-export default Geolocation;

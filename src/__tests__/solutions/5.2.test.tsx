@@ -14,13 +14,12 @@ export const mockLocation = (
 ) => {
   const navigator = {
     geolocation: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       getCurrentPosition: (success: any, error: any) => {
         if (supported) {
           success({
             coords: {
-              latitude: latitude,
-              longitude: longitude,
+              latitude,
+              longitude,
             },
           });
         } else {

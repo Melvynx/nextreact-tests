@@ -1,4 +1,5 @@
-import { LoginForm } from '../auth/Auth';
+import type { FormEvent } from 'react';
+import type { LoginForm } from '../auth/Auth';
 import { Loader } from '../Loader';
 import styles from './Login.module.css';
 
@@ -8,7 +9,7 @@ type LoginProps = {
 };
 
 export const Login = ({ onSubmit, isSubmitting }: LoginProps) => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);

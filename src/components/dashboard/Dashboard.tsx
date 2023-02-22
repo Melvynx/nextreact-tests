@@ -1,7 +1,7 @@
 import { useTheme } from '../theme/ThemeProvider';
 import { ToggleThemeButton } from '../theme/ToggleThemeButton';
-import { UserForm } from '../user/UserForm';
-import { useUser } from '../user/UserProvider';
+import { DashboardHeader } from './DashboardHeader';
+import { DashboardUser } from './DashboardUser';
 
 export const Dashboard = () => {
   const { theme } = useTheme();
@@ -13,27 +13,15 @@ export const Dashboard = () => {
         color: theme === 'light' ? 'black' : 'white',
         padding: 32,
         borderRadius: 8,
+        display: 'flex',
+        gap: 32,
+        flexDirection: 'column',
       }}
     >
-      <h1>Dashboard</h1>
+      <DashboardHeader />
+      <h1 style={{ margin: 0 }}>Dashboard</h1>
       <DashboardUser />
       <ToggleThemeButton />
-    </div>
-  );
-};
-
-export const DashboardUser = () => {
-  const { user, logout, login } = useUser();
-
-  return user ? (
-    <div>
-      <p>Welcome, {user}</p>
-      <button onClick={() => logout()}>Logout</button>
-    </div>
-  ) : (
-    <div>
-      <p>Please login</p>
-      <UserForm login={login} />
     </div>
   );
 };

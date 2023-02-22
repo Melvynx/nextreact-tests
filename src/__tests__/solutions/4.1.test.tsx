@@ -1,32 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import { rest } from 'msw';
-import { describe, test } from 'vitest';
+import { act } from 'react-dom/test-utils';
+import { beforeAll, describe, expect, test } from 'vitest';
 import { Auth } from '../../components/auth/Auth';
 import { server } from '../../test/server';
 import { setup } from '../../test/setup';
 import { wait } from '../../test/wait';
-
-const authFormSetup = async (username?: string) => {
-  const { user } = setup(<Auth />);
-
-  const usernameInput = screen.getByLabelText('Username');
-  const passwordInput = screen.getByLabelText('Password');
-
-  const form = {
-    username: username ?? faker.internet.userName(),
-    password: faker.internet.password(),
-  };
-
-  await user.type(usernameInput, form.username);
-  await user.type(passwordInput, form.password);
-
-  const submit = screen.getByRole('button', { name: 'Login' });
-
-  await user.click(submit);
-
-  return { user, form };
-};
 
 beforeAll(() => {
   server.use(
@@ -51,9 +31,23 @@ beforeAll(() => {
 
 describe('Auth', () => {
   test('user is display after form submission if api send correct data', async () => {
-    const username = faker.internet.userName();
+    const username = faker.internet.userName('John', 'Doe');
+    const { user } = setup(<Auth />);
 
-    await authFormSetup(username);
+    const usernameInput = screen.getByLabelText('Username');
+    const passwordInput = screen.getByLabelText('Password');
+
+    const form = {
+      username,
+      password: faker.internet.password(),
+    };
+
+    await user.type(usernameInput, form.username);
+    await user.type(passwordInput, form.password);
+
+    const submit = screen.getByRole('button', { name: 'Login' });
+
+    await act(async () => user.click(submit));
 
     await waitForElementToBeRemoved(() => screen.getByTestId('loader'));
 

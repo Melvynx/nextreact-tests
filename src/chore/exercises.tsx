@@ -6,7 +6,7 @@
 import { Auth } from '../components/auth/Auth';
 import { Counter } from '../components/counter/Counter';
 import { Dashboard } from '../components/dashboard/Dashboard';
-import Geolocation from '../components/geolocation/Geolocation';
+import { Geolocation } from '../components/geolocation/Geolocation';
 import { Login } from '../components/login/Login';
 import { ThemeContextProvider } from '../components/theme/ThemeProvider';
 import { UserContextProvider } from '../components/user/UserProvider';
@@ -18,7 +18,7 @@ export const EXERCISES = [
   },
   {
     name: 'Login',
-    components: <Login onSubmit={() => new Promise((r) => r(''))} />,
+    components: <Login onSubmit={async () => new Promise((r) => r(''))} />,
   },
   {
     name: 'Auth',

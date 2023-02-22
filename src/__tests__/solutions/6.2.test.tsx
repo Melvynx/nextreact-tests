@@ -1,6 +1,7 @@
-import { RenderOptions, screen } from '@testing-library/react';
-import { PropsWithChildren, ReactElement } from 'react';
-import { describe, test } from 'vitest';
+import type { RenderOptions } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import type { PropsWithChildren, ReactElement } from 'react';
+import { describe, expect, test } from 'vitest';
 import { Dashboard } from '../../components/dashboard/Dashboard';
 import { ThemeContextProvider } from '../../components/theme/ThemeProvider';
 import { UserContextProvider } from '../../components/user/UserProvider';

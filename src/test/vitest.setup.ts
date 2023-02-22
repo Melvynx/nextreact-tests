@@ -1,11 +1,12 @@
 import matchers from '@testing-library/jest-dom/matchers';
 import { cleanup } from '@testing-library/react';
 import { fetch } from 'cross-fetch';
-import { beforeEach, expect } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, expect } from 'vitest';
 import { server } from './server';
 
 expect.extend(matchers);
 
+// eslint-disable-next-line no-undef
 global.fetch = fetch;
 
 beforeEach(() => {
@@ -16,6 +17,7 @@ beforeEach(() => {
 
 afterEach(() => {
   server.resetHandlers();
+  // mock
 });
 
 // Start server before all tests

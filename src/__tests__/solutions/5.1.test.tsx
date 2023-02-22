@@ -11,12 +11,11 @@ export const mockLocation = ({
 }) => {
   const navigator = {
     geolocation: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       getCurrentPosition: (success: any) => {
         success({
           coords: {
-            latitude: latitude,
-            longitude: longitude,
+            latitude,
+            longitude,
           },
         });
       },

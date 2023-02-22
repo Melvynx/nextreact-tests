@@ -33,16 +33,14 @@ const useLoginSubmission = () => {
       .then(async (res) => {
         const json = await res.json();
         if (!res.ok) {
-          return Promise.reject(json);
+          throw json;
         }
         return json;
       })
-      .then((user) => {
-        const parsedUser = UserScheme.parse(user);
-        setUser(parsedUser);
-      })
-      .catch((err) => {
-        setError(err.message || 'An error occurred');
+      .then((u) => UserScheme.parse(u))
+      .then((u) => setUser(u))
+      .catch((error_) => {
+        setError(error_.message || 'An error occurred');
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -67,7 +65,7 @@ export const Auth = () => {
   return (
     <div>
       <Login onSubmit={onSubmit} isSubmitting={isSubmitting} />
-      {error && <p>{error}</p>}
+      {error && <p role="alert">{error}</p>}
     </div>
   );
 };
