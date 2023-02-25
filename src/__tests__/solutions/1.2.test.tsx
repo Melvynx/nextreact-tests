@@ -8,7 +8,7 @@ describe('Counter', () => {
     const div = document.createElement('div');
     document.body.append(div);
 
-    await act(() => {
+    act(() => {
       const root = ReactDOM.createRoot(div);
       root.render(<Counter />);
     });

@@ -1,6 +1,7 @@
 import { act, render } from '@testing-library/react';
-import { describe } from 'vitest';
-import { useCounter, UseCounterOutput } from '../../hooks/useCounter';
+import { describe, expect, test } from 'vitest';
+import type { UseCounterOutput } from '../../hooks/useCounter';
+import { useCounter } from '../../hooks/useCounter';
 
 describe('useCounter', () => {
   test('show the counter and increment/decrement/reset/set counter', async () => {

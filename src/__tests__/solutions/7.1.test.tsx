@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react';
-import { describe } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { useCounter } from '../../hooks/useCounter';
 import { setup } from '../../test/setup';
 
