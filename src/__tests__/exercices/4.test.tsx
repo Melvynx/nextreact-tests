@@ -1,43 +1,43 @@
 import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
-import { describe, test } from 'vitest';
+import { rest } from 'msw';
+import { act } from 'react-dom/test-utils';
+import { beforeAll, describe, test } from 'vitest';
 import { Auth } from '../../components/auth/Auth';
+import { server } from '../../test/server';
 import { setup } from '../../test/setup';
 
-const authFormSetup = async (username?: string) => {
-  const { user } = setup(<Auth />);
-
-  const usernameInput = screen.getByLabelText('Username');
-  const passwordInput = screen.getByLabelText('Password');
-
-  const form = {
-    username: username ?? faker.internet.userName(),
-    password: faker.internet.password(),
-  };
-
-  await user.type(usernameInput, form.username);
-  await user.type(passwordInput, form.password);
-
-  const submit = screen.getByRole('button', { name: 'Login' });
-
-  await user.click(submit);
-
-  return { user, form };
-};
+beforeAll(() => {
+  server.use(
+    rest.post('https://api.server.com/auth/login', async (req, res, ctx) => {
+      // 🦁 Créer un faux handler qui permet de tester notre application
+      // https://mswjs.io/docs/basics/request-handler
+    })
+  );
+});
 
 describe('Auth', () => {
   test('user is display after form submission if api send correct data', async () => {
-    const username = faker.internet.userName();
+    const username = faker.internet.userName('John', 'Doe');
+    const { user } = setup(<Auth />);
 
-    // 🦁 Ajoute le `fetchMock` avec la bonne url
-    // 💡 fetchMock.mockIf(URL, async () => {
-    // 🦁 A l'intérieur retourne un objet avec le body et le status, et l'username définit ci-dessus
+    const usernameInput = screen.getByLabelText('Username');
+    const passwordInput = screen.getByLabelText('Password');
 
-    await authFormSetup(username);
+    const form = {
+      username,
+      password: faker.internet.password(),
+    };
 
-    // 🦁 Utilise `waitForElementToBeRemoved` pour attendre que le loader disparaisse
-    // le loader à comme data-testid `loader`
+    await user.type(usernameInput, form.username);
+    await user.type(passwordInput, form.password);
 
-    // Vérifie que le username est bien affiché dans le document
+    const submit = screen.getByRole('button', { name: 'Login' });
+
+    await act(async () => user.click(submit));
+
+    // 🦁 Attendre que le loader disparaisse
+
+    // 🦁 Vérifier que le nom d'utilisateur est affiché
   });
 });
